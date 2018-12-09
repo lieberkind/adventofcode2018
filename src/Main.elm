@@ -1,7 +1,8 @@
 module Main exposing (Model, Msg(..), init, main, update, view)
 
 import Browser
-import Days.Day2 exposing (day)
+import Days.Day1 as Day1 exposing (day)
+import Days.Day2 as Day2 exposing (day)
 import Html exposing (..)
 import Html.Attributes exposing (selected, src, value)
 import Html.Events exposing (onClick, onInput)
@@ -13,34 +14,20 @@ import Util.SelectList as SelectList exposing (SelectList)
 ---- MODEL ----
 
 
-day1 : Day
-day1 =
-    { number = 1
-    , solvePart1 = \_ -> "Solved day 1 part 1"
-    , solvePart2 = \_ -> "Solved day 1 part 2"
-    }
-
-
-day2 : Day
-day2 =
-    { number = 2
-    , solvePart1 = \_ -> "Solved day 2 part 1"
-    , solvePart2 = \_ -> "Solved day 2 part 2"
-    }
-
-
 type alias Model =
     { days : SelectList Day
     , input : String
-    , answer : String
+    , answer1 : String
+    , answer2 : String
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { days = SelectList.fromLists [] day1 [ day2 ]
+    ( { days = SelectList.fromLists [] Day1.day [ Day2.day ]
       , input = ""
-      , answer = ""
+      , answer1 = ""
+      , answer2 = ""
       }
     , Cmd.none
     )
@@ -83,10 +70,13 @@ update msg model =
                 day =
                     SelectList.selected model.days
 
-                answer =
+                answer1 =
                     day.solvePart1 model.input
+
+                answer2 =
+                    day.solvePart2 model.input
             in
-            ( { model | answer = answer }, Cmd.none )
+            ( { model | answer1 = answer1, answer2 = answer2 }, Cmd.none )
 
         NoOp ->
             ( model, Cmd.none )
@@ -112,14 +102,17 @@ view model =
         , div []
             [ textarea [ onInput InputChanged ] []
             , button [ onClick RunClicked ] [ text "Run" ]
-            , viewAnswer model.answer
+            , viewAnswers model.answer1 model.answer2
             ]
         ]
 
 
-viewAnswer : String -> Html Msg
-viewAnswer answer =
-    div [] [ text answer ]
+viewAnswers : String -> String -> Html Msg
+viewAnswers answer1 answer2 =
+    div []
+        [ div [] [ "Part 1: " ++ answer1 |> text ]
+        , div [] [ "Part 2: " ++ answer2 |> text ]
+        ]
 
 
 viewDayOption : Bool -> Day -> Html Msg

@@ -1,6 +1,7 @@
 module Days.Day2 exposing (day)
 
-import Util.Day exposing (Day)
+import Dict exposing (Dict)
+import Util.Day exposing (Day, Input, Solution)
 
 
 parseInput : String -> List String
@@ -31,32 +32,40 @@ hamming str1 str2 =
         |> List.length
 
 
-solvePart2 : List String -> Maybe ( String, String )
-solvePart2 strings =
+removeDifferences : String -> String -> String
+removeDifferences str1 str2 =
+    List.map2
+        (\a b ->
+            if a == b then
+                Just a
+
+            else
+                Nothing
+        )
+        (String.toList str1)
+        (String.toList str2)
+        |> List.filterMap identity
+        |> String.fromList
+
+
+solvePart2Help : List String -> String
+solvePart2Help strings =
     case strings of
         [] ->
-            Nothing
+            "No cigar"
 
         str1 :: strs ->
             case find (\str2 -> hamming str1 str2 == 1) strs of
                 Just match ->
-                    Just ( str1, match )
+                    removeDifferences str1 match
 
                 Nothing ->
-                    solvePart2 strs
+                    solvePart2Help strs
 
 
-printPart2 =
-    let
-        result =
-            solvePart2 parsedInput
-    in
-    case result of
-        Nothing ->
-            "Too bad"
-
-        Just ( str1, str2 ) ->
-            "(" ++ str1 ++ ", " ++ str2 ++ ")"
+solvePart2 : Input -> Solution
+solvePart2 input =
+    solvePart2Help (String.lines input)
 
 
 containsNTimes : Int -> String -> Bool
@@ -81,23 +90,26 @@ inc =
     (+) 1
 
 
-stringsContainingLetterTwice =
+stringsContainingLetterTwice : String -> Int
+stringsContainingLetterTwice input =
     input
         |> String.lines
         |> List.filter (containsNTimes 2)
         |> List.length
 
 
-stringsContainingLetterThrice =
+stringsContainingLetterThrice : String -> Int
+stringsContainingLetterThrice input =
     input
         |> String.lines
         |> List.filter (containsNTimes 3)
         |> List.length
 
 
-solvePart1 : Int
-solvePart1 =
-    stringsContainingLetterTwice * stringsContainingLetterThrice
+solvePart1 : Input -> Solution
+solvePart1 input =
+    (stringsContainingLetterTwice input * stringsContainingLetterThrice input)
+        |> String.fromInt
 
 
 day : Day

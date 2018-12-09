@@ -1,16 +1,16 @@
-module Util.Day exposing (Day, Input)
+module Util.Day exposing (Day, Input, Solution)
 
 
 type alias Input =
     String
 
 
-type alias Answer =
+type alias Solution =
     String
 
 
 type alias Day =
     { number : Int
-    , solvePart1 : Input -> Answer
-    , solvePart2 : Input -> Answer
+    , solvePart1 : Input -> Solution
+    , solvePart2 : Input -> Solution
     }
